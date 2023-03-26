@@ -1,0 +1,3 @@
+[submodule "Dependencies/HyperionEngine"]
+	path = Dependencies/HyperionEngine
+	url = https://github.com/robertoduarte/HyperionEngine
