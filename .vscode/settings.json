@@ -1,0 +1,19 @@
+{
+    "files.exclude": {
+        ".vscode/": true,
+        "BuildDrop/": true,
+        ".projectile": true,
+        "build/": true,
+        "build.bat": true,
+        "run_with_mednafen.bat": true,
+        "run_with_yabause.bat": true,
+        "*.iso": true,
+        "*.cue": true,
+    },
+    "files.associations": {
+        "*.H": "c",
+        "*.C": "c",
+        "yaul.h": "cpp",
+        "bios.h": "cpp"
+    }
+}
