@@ -1,0 +1,14 @@
+Common/msys_trimmed/tmp/
+Common/mednafen/b/
+Common/mednafen/sav/
+Common/mednafen/firmware/mpr-17933.bin
+build/
+yaul/
+cd/*.TXT
+cd/A.BIN
+*.iso
+*.cue
+A.BIN
+ABS.TXT
+BIB.TXT
+CPY.TXT
