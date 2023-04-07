@@ -86,6 +86,36 @@ namespace rkit::Input::Controllers
      */
     uint8_t NightsPad::GetAxis(const smpc_peripheral_t * peripheral, NightsPad::Axis axis)
     {
-        return NightsPad::IsConnected(peripheral) ? peripheral->data[2 + (int)axis] : 0;
+        if (NightsPad::IsConnected(peripheral))
+        {
+            // Check if nights pad is running in digital only mode
+            if (Input::Peripherals::GetType(peripheral) == Input::Peripherals::PeripheralType::Gamepad)
+            {
+                switch (axis)
+                {
+                case NightsPad::Axis::X:
+                    return NightsPad::IsHeld(peripheral, NightsPad::Button::Left) ? 0xff : (NightsPad::IsHeld(peripheral, NightsPad::Button::Right) ? 0x00 : 0x7F);
+                
+                case NightsPad::Axis::Y:
+                    return NightsPad::IsHeld(peripheral, NightsPad::Button::Up) ? 0xff : (NightsPad::IsHeld(peripheral, NightsPad::Button::Down) ? 0x00 : 0x7F);
+
+                case NightsPad::Axis::R:
+                    return NightsPad::IsHeld(peripheral, NightsPad::Button::R) ? 0x00 : 0xff;
+
+                case NightsPad::Axis::L:
+                    return NightsPad::IsHeld(peripheral, NightsPad::Button::L) ? 0x00 : 0xff;
+                    
+                default:
+                    return 0x7F;
+                }
+            }
+            else
+            {
+                return peripheral->data[2 + (int)axis];
+            }
+        }
+
+        // Center axis in case of XY, and max out axis in case of RL
+        return axis == NightsPad::Axis::L || axis == NightsPad::Axis::R ? 0xff : 0x7F;
     }
 }

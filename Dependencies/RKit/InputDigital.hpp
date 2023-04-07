@@ -17,19 +17,19 @@ namespace rkit::Input
         {
             /** @brief D-Pad right direction
              */
-            Right = 1 << 6,
+            Right = 1 << 15,
 
             /** @brief D-Pad left direction
              */
-            Left = 1 << 7,
+            Left = 1 << 14,
 
             /** @brief D-Pad down direction
              */
-            Down = 1 << 5,
+            Down = 1 << 13,
 
             /** @brief D-Pad up direction
              */
-            Up = 1 << 4,
+            Up = 1 << 12,
 
             /** @brief Start button
              */
@@ -49,23 +49,23 @@ namespace rkit::Input
 
             /** @brief X button
              */
-            X = 1 << 2,
+            X = 1 << 6,
 
             /** @brief Y button
              */
-            Y = 1 << 1,
+            Y = 1 << 5,
 
             /** @brief Z button
              */
-            Z = 1 << 0,
+            Z = 1 << 4,
 
             /** @brief Right trigger
              */
-            R = 1 << 3,
+            R = 1 << 7,
 
             /** @brief Left trigger
              */
-            L = 1 << 15
+            L = 1 << 3
         };
 
         /** @brief Check if user is holding down a button

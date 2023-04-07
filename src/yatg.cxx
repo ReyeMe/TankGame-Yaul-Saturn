@@ -94,6 +94,26 @@ main(void)
         uint8_t l = rkit::Input::Controllers::NightsPad::GetAxis((uint8_t)0, rkit::Input::Controllers::NightsPad::Axis::L);
         dbgio_printf("X:%d\nY:%d\nR:%d\nL:%d\n", x, y, r, l);
 
+        bool up = rkit::Input::Controllers::NightsPad::IsHeld((uint8_t)0, rkit::Input::Controllers::NightsPad::Button::Up);
+        bool down = rkit::Input::Controllers::NightsPad::IsHeld((uint8_t)0, rkit::Input::Controllers::NightsPad::Button::Down);
+        bool left = rkit::Input::Controllers::NightsPad::IsHeld((uint8_t)0, rkit::Input::Controllers::NightsPad::Button::Left);
+        bool right = rkit::Input::Controllers::NightsPad::IsHeld((uint8_t)0, rkit::Input::Controllers::NightsPad::Button::Right);
+        
+        dbgio_printf("\n   A%d\n<%d + %d>\n   V%d\n", up, left, right, down);
+
+        bool start = rkit::Input::Controllers::NightsPad::IsHeld((uint8_t)0, rkit::Input::Controllers::NightsPad::Button::START);
+        
+        bool rt = rkit::Input::Controllers::NightsPad::IsHeld((uint8_t)0, rkit::Input::Controllers::NightsPad::Button::R);
+        bool lt = rkit::Input::Controllers::NightsPad::IsHeld((uint8_t)0, rkit::Input::Controllers::NightsPad::Button::L);
+        bool ba = rkit::Input::Controllers::NightsPad::IsHeld((uint8_t)0, rkit::Input::Controllers::NightsPad::Button::A);
+        bool bb = rkit::Input::Controllers::NightsPad::IsHeld((uint8_t)0, rkit::Input::Controllers::NightsPad::Button::B);
+        bool bc = rkit::Input::Controllers::NightsPad::IsHeld((uint8_t)0, rkit::Input::Controllers::NightsPad::Button::C);
+        bool bx = rkit::Input::Controllers::NightsPad::IsHeld((uint8_t)0, rkit::Input::Controllers::NightsPad::Button::X);
+        bool by = rkit::Input::Controllers::NightsPad::IsHeld((uint8_t)0, rkit::Input::Controllers::NightsPad::Button::Y);
+        bool bz = rkit::Input::Controllers::NightsPad::IsHeld((uint8_t)0, rkit::Input::Controllers::NightsPad::Button::Z);
+        
+        dbgio_printf("\nSTART:%d\n\nRT:%d\nLT:%d\n\nA:%d\nB:%d\nC:%d\n\nX:%d\nY:%d\nZ:%d\n", start, rt, lt, ba, bb, bc, bx, by, bz);
+
         // Do game stuff
         //EntityST::ForEach(
         //    [](Position &p, Velocity &v)
