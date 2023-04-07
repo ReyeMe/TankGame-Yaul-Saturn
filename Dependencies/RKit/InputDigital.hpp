@@ -5,6 +5,9 @@
 
 namespace rkit::Input
 {
+    /** @brief Generic digital controller
+     */
+    template<class ControllerType>
     class Digital
     {
     public:
@@ -65,13 +68,6 @@ namespace rkit::Input
             L = 1 << 15
         };
 
-        /** @brief Is digital peripheral connected
-         * @param peripheral Peripheral to check
-         * @return true Digital peripheral is connected
-         * @return false Digital peripheral is not connected
-         */
-        static bool IsConnected(const smpc_peripheral_t * peripheral);
-
         /** @brief Check if user is holding down a button
          * @param peripheral Connected peripheral
          * @param button Button to check
@@ -95,16 +91,6 @@ namespace rkit::Input
          * @return false Button was not released
          */
         static bool IsUp(const smpc_peripheral_t * peripheral, Digital::Button button);
-
-        /** @brief Is digital peripheral connected
-         * @param port Input port
-         * @return true Digital peripheral is connected
-         * @return false Digital peripheral is not connected
-         */
-        static bool IsConnected(uint8_t port)
-        {
-            return Digital::IsConnected(Input::Peripherals::GetPeripheral(port));
-        }
 
         /** @brief Check if user is holding down a button
          * @param port Input port
@@ -139,17 +125,6 @@ namespace rkit::Input
             return Digital::IsUp(Input::Peripherals::GetPeripheral(port), button);
         }
     };
-    
-    /** @brief Is digital peripheral connected
-     * @param peripheral Peripheral to check
-     * @return true Digital peripheral is connected
-     * @return false Digital peripheral is not connected
-     */
-    bool Digital::IsConnected(const smpc_peripheral_t * peripheral)
-    {
-        return peripheral != NULL &&
-            Input::Peripherals::GetFamily(peripheral) == Input::Peripherals::PeripheralFamily::Digital;
-    }
 
     /** @brief Check if user is holding down a button
      * @param peripheral Connected peripheral
@@ -157,9 +132,10 @@ namespace rkit::Input
      * @return true Button was pressed
      * @return false Button was not pressed
      */
-    bool Digital::IsHeld(const smpc_peripheral_t * peripheral, Digital::Button button)
+    template<class ControllerType>
+    bool Digital<ControllerType>::IsHeld(const smpc_peripheral_t * peripheral, Digital::Button button)
     {
-        return Digital::IsConnected(peripheral) && ((*(uint16_t*)peripheral->data) & (uint16_t)button) != 0;
+        return ControllerType::IsConnected(peripheral) && ((*(uint16_t*)peripheral->data) & (uint16_t)button) != 0;
     }
 
     /** @brief Check if user pressed a button
@@ -168,9 +144,10 @@ namespace rkit::Input
      * @return true Button is being held down
      * @return false Button is not held down
      */
-    bool Digital::IsDown(const smpc_peripheral_t * peripheral, Digital::Button button)
+    template<class ControllerType>
+    bool Digital<ControllerType>::IsDown(const smpc_peripheral_t * peripheral, Digital::Button button)
     {
-        if (Digital::IsConnected(peripheral))
+        if (ControllerType::IsConnected(peripheral))
         {
             uint16_t current = *(uint16_t*)peripheral->data;
             uint16_t last = *(uint16_t*)peripheral->previous_data;
@@ -186,9 +163,10 @@ namespace rkit::Input
      * @return true Button was released
      * @return false Button was not released
      */
-    bool Digital::IsUp(const smpc_peripheral_t * peripheral, Digital::Button button)
+    template<class ControllerType>
+    bool Digital<ControllerType>::IsUp(const smpc_peripheral_t * peripheral, Digital::Button button)
     {
-        if (Digital::IsConnected(peripheral))
+        if (ControllerType::IsConnected(peripheral))
         {
             uint16_t current = *(uint16_t*)peripheral->data;
             uint16_t last = *(uint16_t*)peripheral->previous_data;
