@@ -88,8 +88,11 @@ main(void)
         rkit::Input::Peripherals::FetchAll();
 
         // Read input
-        int test = rkit::Input::Digital::IsHeld((uint8_t)0, rkit::Input::Digital::Button::A) ? 1 : 0;
-        dbgio_printf("%d", test);
+        uint8_t x = rkit::Input::Controllers::NightsPad::GetAxis((uint8_t)0, rkit::Input::Controllers::NightsPad::Axis::X);
+        uint8_t y = rkit::Input::Controllers::NightsPad::GetAxis((uint8_t)0, rkit::Input::Controllers::NightsPad::Axis::Y);
+        uint8_t r = rkit::Input::Controllers::NightsPad::GetAxis((uint8_t)0, rkit::Input::Controllers::NightsPad::Axis::R);
+        uint8_t l = rkit::Input::Controllers::NightsPad::GetAxis((uint8_t)0, rkit::Input::Controllers::NightsPad::Axis::L);
+        dbgio_printf("X:%d\nY:%d\nR:%d\nL:%d\n", x, y, r, l);
 
         // Do game stuff
         //EntityST::ForEach(
