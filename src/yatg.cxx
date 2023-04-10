@@ -2,21 +2,14 @@
 #include <stdlib.h>
 #include <yaul.h>
 //#include "..\Dependencies\HyperionEngine\ECS\Entity.hpp"
-#include "..\Dependencies\RKit\Input.hpp"
+#include "..\Dependencies\Skathi\Skathi.hpp"
 
 extern "C" {    
     #include <mic3d.h>
 };
 
-struct Position
-{
-    int x, y;
-};
-
-struct Velocity
-{
-    int x, y;
-};
+uint32_t fileIndex = 0;
+char * text = NULL;
 
 /** @brief Shading table
  */
@@ -80,48 +73,67 @@ main(void)
     // Initialize entity
     //EntityST::Create(Position(10, 20), Velocity(1, 2));
 
+    Skathi::Cd::Initialize();
+
     while (true) {
 
         dbgio_puts("[H[2J");
 
+        // Get list of files
+        cdfs_filelist_t * files = Skathi::Cd::GetAll();
+
         // Fetch input
-        rkit::Input::Peripherals::FetchAll();
+        Skathi::Input::Peripherals::FetchAll();
 
-        // Read input
-        uint8_t x = rkit::Input::Controllers::NightsPad::GetAxis((uint8_t)0, rkit::Input::Controllers::NightsPad::Axis::X);
-        uint8_t y = rkit::Input::Controllers::NightsPad::GetAxis((uint8_t)0, rkit::Input::Controllers::NightsPad::Axis::Y);
-        uint8_t r = rkit::Input::Controllers::NightsPad::GetAxis((uint8_t)0, rkit::Input::Controllers::NightsPad::Axis::R);
-        uint8_t l = rkit::Input::Controllers::NightsPad::GetAxis((uint8_t)0, rkit::Input::Controllers::NightsPad::Axis::L);
-        dbgio_printf("X:%d\nY:%d\nR:%d\nL:%d\n", x, y, r, l);
+        // Select file
+        if (Skathi::Input::Controllers::Gamepad::IsDown((uint8_t)0, Skathi::Input::Controllers::Gamepad::Button::Up))
+        {
+            fileIndex--;
+        }
+        else if (Skathi::Input::Controllers::Gamepad::IsDown((uint8_t)0, Skathi::Input::Controllers::Gamepad::Button::Down))
+        {
+            fileIndex++;
+        }
 
-        bool up = rkit::Input::Controllers::NightsPad::IsHeld((uint8_t)0, rkit::Input::Controllers::NightsPad::Button::Up);
-        bool down = rkit::Input::Controllers::NightsPad::IsHeld((uint8_t)0, rkit::Input::Controllers::NightsPad::Button::Down);
-        bool left = rkit::Input::Controllers::NightsPad::IsHeld((uint8_t)0, rkit::Input::Controllers::NightsPad::Button::Left);
-        bool right = rkit::Input::Controllers::NightsPad::IsHeld((uint8_t)0, rkit::Input::Controllers::NightsPad::Button::Right);
-        
-        dbgio_printf("\n   A%d\n<%d + %d>\n   V%d\n", up, left, right, down);
+        // Read file
+        if (Skathi::Input::Controllers::Gamepad::IsDown((uint8_t)0, Skathi::Input::Controllers::Gamepad::Button::START))
+        {
+            if (text != NULL)
+            {
+                free(text);
+            }
 
-        bool start = rkit::Input::Controllers::NightsPad::IsHeld((uint8_t)0, rkit::Input::Controllers::NightsPad::Button::START);
-        
-        bool rt = rkit::Input::Controllers::NightsPad::IsHeld((uint8_t)0, rkit::Input::Controllers::NightsPad::Button::R);
-        bool lt = rkit::Input::Controllers::NightsPad::IsHeld((uint8_t)0, rkit::Input::Controllers::NightsPad::Button::L);
-        bool ba = rkit::Input::Controllers::NightsPad::IsHeld((uint8_t)0, rkit::Input::Controllers::NightsPad::Button::A);
-        bool bb = rkit::Input::Controllers::NightsPad::IsHeld((uint8_t)0, rkit::Input::Controllers::NightsPad::Button::B);
-        bool bc = rkit::Input::Controllers::NightsPad::IsHeld((uint8_t)0, rkit::Input::Controllers::NightsPad::Button::C);
-        bool bx = rkit::Input::Controllers::NightsPad::IsHeld((uint8_t)0, rkit::Input::Controllers::NightsPad::Button::X);
-        bool by = rkit::Input::Controllers::NightsPad::IsHeld((uint8_t)0, rkit::Input::Controllers::NightsPad::Button::Y);
-        bool bz = rkit::Input::Controllers::NightsPad::IsHeld((uint8_t)0, rkit::Input::Controllers::NightsPad::Button::Z);
-        
-        dbgio_printf("\nSTART:%d\n\nRT:%d\nLT:%d\n\nA:%d\nB:%d\nC:%d\n\nX:%d\nY:%d\nZ:%d\n", start, rt, lt, ba, bb, bc, bx, by, bz);
+            text = (char*)malloc(files->entries[fileIndex].size + 1);
 
-        // Do game stuff
-        //EntityST::ForEach(
-        //    [](Position &p, Velocity &v)
-        //    {
-        //        p.x += v.x;
-        //        p.y += v.y;
-        //        dbgio_printf("Position x:%d y:%d\n", p.x, p.y);
-        //    });
+            if (Skathi::Cd::ReadFile(&files->entries[fileIndex], (void*)text))
+            {
+                text[files->entries[fileIndex].size] = '\0'; 
+            }
+            else
+            {
+                text = NULL;
+            }
+        }
+
+        // Draw file list
+        fileIndex = min(fileIndex, files->entries_count - 1);
+
+        for (uint32_t file = 0; file < files->entries_count; file++)
+        {
+            if (file == fileIndex) 
+            {
+                dbgio_printf(">%s\n", files->entries[file].name);
+            }
+            else
+            {
+                dbgio_printf(" %s\n", files->entries[file].name);
+            }
+        }
+
+        if (text != NULL)
+        {
+            dbgio_printf("\n%s", text);
+        }
 
         // Start rendering to screen
         render();

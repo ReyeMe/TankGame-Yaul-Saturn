@@ -4,11 +4,11 @@
 #include "InputPeripherals.hpp"
 #include "InputDigital.hpp"
 
-namespace rkit::Input::Controllers
+namespace Skathi::Input::Controllers
 {
     /** @brief Nights controller (3D pad)
      */
-    class NightsPad : public rkit::Input::Digital<NightsPad>
+    class NightsPad : public Skathi::Input::Digital<NightsPad>
     {
     public:
         /** @brief Thumb stick axis
