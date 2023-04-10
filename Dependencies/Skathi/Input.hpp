@@ -5,7 +5,7 @@
 
 /** @brief Special handling for controllers
  */
-namespace Skathi::Input::Controllers { };
+namespace Skathi::Input::Controllers { }
 
 #include "InputControllersGamepad.hpp"
 #include "InputControllersNightsPad.hpp"

@@ -2,7 +2,8 @@
 
 /** @brief Skathi wrapper library
  */
-namespace Skathi { };
+namespace Skathi { }
 
 #include "Input.hpp"
 #include "Cd.hpp"
+#include "BitmapImage.hpp"
