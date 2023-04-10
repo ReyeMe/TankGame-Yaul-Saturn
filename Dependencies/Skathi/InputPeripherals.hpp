@@ -2,9 +2,9 @@
 
 #include <yaul.h>
 
-/** @brief Reyes super kit
+/** @brief Input handling
  */
-namespace rkit::Input
+namespace Skathi::Input
 {
     /** @brief Controller input wrapper
      */

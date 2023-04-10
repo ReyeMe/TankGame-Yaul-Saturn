@@ -4,9 +4,11 @@
 #include "InputPeripherals.hpp"
 #include "InputDigital.hpp"
 
-namespace rkit::Input::Controllers
+namespace Skathi::Input::Controllers
 {
-    class Gamepad : public rkit::Input::Digital<Gamepad>
+    /** @brief Generic gamepad
+     */
+    class Gamepad : public Skathi::Input::Digital<Gamepad>
     {
     public:
         /** @brief Is digital peripheral connected

@@ -3,7 +3,7 @@
 #include <yaul.h>
 #include "InputPeripherals.hpp"
 
-namespace rkit::Input
+namespace Skathi::Input
 {
     /** @brief Generic digital controller
      */
