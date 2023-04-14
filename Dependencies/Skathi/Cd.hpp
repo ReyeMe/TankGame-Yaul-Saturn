@@ -74,7 +74,6 @@ namespace Skathi
         /** @brief Read whole file into a buffer
          * @param file File to read
          * @param buffer Target buffer
-         * @param offset Offset from start of the file
          * @param length Number of bytes to read
          * @return true File was read successfully 
          * @return false Reading file ended with error

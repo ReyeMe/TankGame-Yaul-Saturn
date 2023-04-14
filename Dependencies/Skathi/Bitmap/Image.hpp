@@ -57,15 +57,15 @@ namespace Skathi::Bitmap
         {
             struct
             {
-                /** @brief Blue color
+                /** @brief Blue color component
                  */
                 unsigned int B:5;
 
-                /** @brief Green color
+                /** @brief Green color component
                  */
                 unsigned int G:5;
 
-                /** @brief Red color
+                /** @brief Red color component
                  */
                 unsigned int R:5;
 
@@ -148,19 +148,18 @@ namespace Skathi::Bitmap
          */
         Color_t * paletteData = NULL;
 
-        /** @brief 
+        /** @brief Number of colors in palette
          */
         uint8_t paletteSize = 0;
 
-        /** @brief Construct a new Image object
-         * @param size Image size
-         * @param format Image format
+        /** @brief Default image contructor, will create an empty image
          */
         Image()
         {
             this->bitmapSize.Height = 0;
             this->bitmapSize.Width = 0;
             this->bitmapFormat = Bitmap::ImageFormat::Indexed;
+            this->paletteSize = 0;
             this->paletteData = NULL;
             this->data = NULL;
         }
