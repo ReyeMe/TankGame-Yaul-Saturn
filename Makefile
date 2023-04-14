@@ -13,7 +13,7 @@ SH_PROGRAM:= yatg
 SH_SRCS:= \
 	src/yatg.cxx \
 
-SH_LIBRARIES:= mic3d
+SH_LIBRARIES:= mic3d tga
 SH_CFLAGS+= -O2 -I. -DDEBUG -g
 
 IP_VERSION:= V1.000

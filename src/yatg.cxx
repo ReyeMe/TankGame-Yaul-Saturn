@@ -115,6 +115,9 @@ main(void)
             }
         }
 
+        //Skathi::Bitmap::TGAImage * image = new Skathi::Bitmap::TGAImage("Test.TGA");
+        //delete(image);
+
         // Draw file list
         fileIndex = min(fileIndex, files->entries_count - 1);
 

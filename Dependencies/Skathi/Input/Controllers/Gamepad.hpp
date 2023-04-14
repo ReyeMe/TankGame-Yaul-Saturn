@@ -1,8 +1,8 @@
 #pragma once
 
 #include <yaul.h>
-#include "InputPeripherals.hpp"
-#include "InputDigital.hpp"
+#include "../Peripherals.hpp"
+#include "../Digital.hpp"
 
 namespace Skathi::Input::Controllers
 {

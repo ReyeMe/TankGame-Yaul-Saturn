@@ -4,6 +4,6 @@
  */
 namespace Skathi { }
 
-#include "Input.hpp"
+#include "Input/Input.hpp"
 #include "Cd.hpp"
-#include "BitmapImage.hpp"
+#include "Bitmap/Bitmap.hpp"

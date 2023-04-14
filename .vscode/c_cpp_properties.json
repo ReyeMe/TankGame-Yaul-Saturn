@@ -5,6 +5,8 @@
             "includePath": [
                 "${workspaceFolder}/../shared/perf",
                 "${workspaceFolder}/../shared/menu",
+                "${workspaceFolder}/../../libyaul/libmic3d/.",
+                "${workspaceFolder}/../../libyaul/libtga/.",
                 "${workspaceFolder}/../../libyaul/libyaul/lib/lib",
                 "${workspaceFolder}/../../libyaul/libyaul/.",
                 "${workspaceFolder}/../../libyaul/libyaul/bup",
