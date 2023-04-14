@@ -3,10 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <yaul.h>
-#include "Cd.hpp"
 
-/** @brief Bitmap handling
- */
 namespace Skathi::Bitmap
 {
     /** @brief Image size
@@ -46,34 +43,95 @@ namespace Skathi::Bitmap
         /** @brief Image format
          */
         ImageFormat Format;
+
+        /** @brief Number of color entries in the palette
+         */
+        uint8_t PaletteSize;
     } ImageInfo_t;
 
     /** @brief Color data
      */
-    typedef struct
+    typedef struct Color
     {
-        /** @brief Blue color
-         */
-        unsigned int B:5;
+        union 
+        {
+            struct
+            {
+                /** @brief Blue color
+                 */
+                unsigned int B:5;
 
-        /** @brief Green color
-         */
-        unsigned int G:5;
+                /** @brief Green color
+                 */
+                unsigned int G:5;
 
-        /** @brief Red color
-         */
-        unsigned int R:5;
+                /** @brief Red color
+                 */
+                unsigned int R:5;
 
-        /** @brief Alpha mask
+                /** @brief Alpha mask
+                 */
+                unsigned int Alpha:1;
+            } __packed Components;
+
+            /** @brief Color data
+             */
+            uint16_t Data;
+        };
+
+        /** @brief Construct a new Color object
          */
-        unsigned int Alpha:1;
+        Color()
+        {
+            this->Data = 0x8000;
+        }
+
+        /** @brief Construct a new Color object
+         * @param data Color data
+         */
+        Color(uint16_t data)
+        {
+            this->Data = data;
+        }
+
+        /** @brief Construct a new Color object
+         * @param r Red component
+         * @param g Green component
+         * @param b Blue component
+         * @param alpha Alpha flag
+         */
+        Color(uint8_t r, uint8_t g, uint8_t b, uint8_t alpha)
+        {
+            this->Components.R = r;
+            this->Components.G = g;
+            this->Components.B = b;
+            this->Components.Alpha = alpha;
+        }
+
+        /** @brief Convert to unsigned short
+         * @return Converted value 
+         */
+        operator uint16_t() const
+        {
+            return this->Data;
+        }
+
+        /** @brief Assign from unsigned short
+         * @param data Color data
+         * @return Color value
+         */
+        Color& operator=(uint16_t data)
+        {
+            this->Data = data;
+            return *this;
+        }
     } __packed Color_t;
 
     /** @brief Image in ARGB1555
      */
     class Image
     {
-    private:
+    protected:
         /** @brief Image size
          */
         Size_t bitmapSize;
@@ -90,6 +148,23 @@ namespace Skathi::Bitmap
          */
         Color_t * paletteData = NULL;
 
+        /** @brief 
+         */
+        uint8_t paletteSize = 0;
+
+        /** @brief Construct a new Image object
+         * @param size Image size
+         * @param format Image format
+         */
+        Image()
+        {
+            this->bitmapSize.Height = 0;
+            this->bitmapSize.Width = 0;
+            this->bitmapFormat = Bitmap::ImageFormat::Indexed;
+            this->paletteData = NULL;
+            this->data = NULL;
+        }
+
     public:
         /** @brief Construct a new Image object
          * @param width Image width
@@ -98,16 +173,18 @@ namespace Skathi::Bitmap
          */
         Image(uint32_t width, uint32_t height, ImageFormat format)
         {
-            bitmapSize.Height = height;
-            bitmapSize.Width = width;
-            bitmapFormat = format;
+            this->bitmapSize.Height = height;
+            this->bitmapSize.Width = width;
+            this->bitmapFormat = format;
+            this->paletteSize = 0;
 
             if (format == Bitmap::ImageFormat::Indexed)
             {
-                paletteData = (Color_t*)malloc((height * width) << 1);
+                this->paletteData = (Color_t*)malloc(sizeof(Color_t) * 255);
+                this->paletteSize = 255;
             }
 
-            data = (uint8_t*)malloc((height * width) << (uint8_t)format);
+            this->data = (uint8_t*)malloc((height * width) << (uint8_t)format);
         }
 
         /** @brief Construct a new Image object
@@ -140,9 +217,10 @@ namespace Skathi::Bitmap
         void GetInfo(ImageInfo_t * result)
         {
             assert(result != NULL);
-            result->Format = bitmapFormat;
-            result->Size.Height = bitmapSize.Height;
-            result->Size.Width = bitmapSize.Width;
+            result->Format = this->bitmapFormat;
+            result->Size.Height = this->bitmapSize.Height;
+            result->Size.Width = this->bitmapSize.Width;
+            result->PaletteSize = this->paletteSize;
         }
 
         /** @brief Get the Palette object
@@ -150,15 +228,15 @@ namespace Skathi::Bitmap
          */
         Color_t * GetPalette()
         {
-            return paletteData;
+            return this->paletteData;
         }
 
         /** @brief Get the image data
          * @return Raw image data
          */
-        void * GetImageData()
+        uint8_t * GetImageData()
         {
-            return (void*)data;
+            return (uint8_t*)this->data;
         }
 
         /** @brief Set the pixel color index
@@ -168,8 +246,8 @@ namespace Skathi::Bitmap
          */
         void SetPixel(uint32_t x, uint32_t y, uint8_t colorIndex)
         {
-            assert(paletteData != NULL);
-            data[(bitmapSize.Height * y) + x] = colorIndex;
+            assert(this->paletteData != NULL);
+            this->data[(this->bitmapSize.Height * y) + x] = colorIndex;
         }
 
         /** @brief Set the RGB pixel
@@ -182,13 +260,9 @@ namespace Skathi::Bitmap
          */
         void SetPixel(uint32_t x, uint32_t y, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
         {
-            assert(paletteData == NULL);
-            uint32_t pixel = ((bitmapSize.Height * y) + x) << 1;
-
-            ((Color_t*)data)[pixel].Alpha = a;
-            ((Color_t*)data)[pixel].R = r;
-            ((Color_t*)data)[pixel].G = g;
-            ((Color_t*)data)[pixel].B = b;
+            assert(this->paletteData == NULL);
+            uint32_t pixel = ((this->bitmapSize.Height * y) + x) << 1;
+            ((Color_t*)this->data)[pixel] = Color_t(r, g, b, a);
         }
 
         /** @brief Set the RGB pixel
@@ -198,7 +272,7 @@ namespace Skathi::Bitmap
          */
         void SetPixel(uint32_t x, uint32_t y, const Color_t * color)
         {
-            SetPixel(x, y, color->R, color->G, color->B, color->Alpha);
+            this->SetPixel(x, y, color->Components.R, color->Components.G, color->Components.B, color->Components.Alpha);
         }
 
         /** @brief Get the image pixel
@@ -208,16 +282,16 @@ namespace Skathi::Bitmap
          */
         Color_t GetPixel(uint32_t x, uint32_t y)
         {
-            assert(data != NULL);
+            assert(this->data != NULL);
 
-            if (bitmapFormat == Bitmap::ImageFormat::Indexed)
+            if (this->bitmapFormat == Bitmap::ImageFormat::Indexed)
             {
-                assert(paletteData != NULL);
-                return paletteData[data[(bitmapSize.Height * y) + x]];
+                assert(this->paletteData != NULL);
+                return this->paletteData[this->data[(this->bitmapSize.Height * y) + x]];
             }
             else
             {
-                return ((Color_t*)data)[(bitmapSize.Height * y) + x];
+                return ((Color_t*)this->data)[(this->bitmapSize.Height * y) + x];
             }
         }
     };

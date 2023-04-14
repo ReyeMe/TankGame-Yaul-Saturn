@@ -1,7 +1,7 @@
 #pragma once
 
 #include <yaul.h>
-#include "InputPeripherals.hpp"
+#include "Peripherals.hpp"
 
 namespace Skathi::Input
 {
