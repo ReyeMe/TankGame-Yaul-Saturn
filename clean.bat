@@ -1,4 +1,4 @@
 @ECHO off
 call ..\..\scripts\setenv.bat
-make
+make clean
 pause

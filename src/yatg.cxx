@@ -1,15 +1,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <yaul.h>
-//#include "..\Dependencies\HyperionEngine\ECS\Entity.hpp"
+#include "..\Dependencies\HyperionEngine\ECS\Entity.hpp"
 #include "..\Dependencies\Skathi\Skathi.hpp"
 
-extern "C" {    
-    #include <mic3d.h>
+struct Position
+{
+    int x, y;
+};
+
+struct Velocity
+{
+    int x, y;
+};
+
+extern "C"
+{
+#include <mic3d.h>
 };
 
 uint32_t fileIndex = 0;
-char * text = NULL;
+char *text = NULL;
 
 /** @brief Shading table
  */
@@ -19,33 +30,53 @@ vdp1_gouraud_table_t pool_shading_tables2[512] __aligned(16);
 /** @brief VBlank-out handler
  */
 static void
-vblank_out_handler(void *work __unused) {
+vblank_out_handler(void *work __unused)
+{
     smpc_peripheral_intback_issue();
 }
 
 /** @brief Main program entry
  */
-void
-main(void)
+void main(void)
 {
-    //using EntityST = Entity<Position, Velocity>;
-
     dbgio_init();
     dbgio_dev_default_init(DBGIO_DEV_VDP2_ASYNC);
     dbgio_dev_font_load();
+
+    using EntityST = Entity<Position, Velocity>;
+
+    EntityST::Create(Position(10, 20),
+                     Velocity(1, 2));
+
+    int iterations = 10;
+    while (iterations--)
+    {
+        EntityST::ForEach(
+            [](Position &p, Velocity &v)
+            {
+                p.x += v.x;
+                p.y += v.y;
+
+                dbgio_printf("Position x:%d y:%d\n", p.x, p.y);
+            });
+
+        dbgio_flush();
+        vdp2_sync();
+        vdp2_sync_wait();
+    }
 
     // Initialize 3D
     mic3d_init();
 
     // Initialize camera
     camera_t camera __unused;
-    camera.position.x = FIX16(  0.0f);
-    camera.position.y = FIX16(  0.0f);
+    camera.position.x = FIX16(0.0f);
+    camera.position.y = FIX16(0.0f);
     camera.position.z = FIX16(-30.0f);
     camera.target.x = FIX16_ZERO;
     camera.target.y = FIX16_ZERO;
     camera.target.z = FIX16_ZERO;
-    camera.up.x =  FIX16_ZERO;
+    camera.up.x = FIX16_ZERO;
     camera.up.y = -FIX16_ONE;
     camera_lookat(&camera);
 
@@ -54,7 +85,8 @@ main(void)
     vdp1_vram_partitions_get(&vdp1_vram_partitions);
     light_gst_set(pool_shading_tables, CMDT_COUNT, (vdp1_vram_t)(vdp1_vram_partitions.gouraud_base + 512));
 
-    for (uint32_t i = 0; i < 512; i++) {
+    for (uint32_t i = 0; i < 512; i++)
+    {
         const rgb1555_t color = RGB1555(1,
                                         (uint32_t)fix16_int32_to(fix16_int32_from(i * 31) / (uint32_t)512),
                                         (uint32_t)fix16_int32_to(fix16_int32_from(i * 31) / (uint32_t)512),
@@ -71,16 +103,17 @@ main(void)
     gst_unset();
 
     // Initialize entity
-    //EntityST::Create(Position(10, 20), Velocity(1, 2));
+    // EntityST::Create(Position(10, 20), Velocity(1, 2));
 
     Skathi::Cd::Initialize();
 
-    while (true) {
+    while (true)
+    {
 
         dbgio_puts("[H[2J");
 
         // Get list of files
-        cdfs_filelist_t * files = Skathi::Cd::GetAll();
+        cdfs_filelist_t *files = Skathi::Cd::GetAll();
 
         // Fetch input
         Skathi::Input::Peripherals::FetchAll();
@@ -103,11 +136,11 @@ main(void)
                 free(text);
             }
 
-            text = (char*)malloc(files->entries[fileIndex].size + 1);
+            text = (char *)malloc(files->entries[fileIndex].size + 1);
 
-            if (Skathi::Cd::ReadFile(&files->entries[fileIndex], (void*)text))
+            if (Skathi::Cd::ReadFile(&files->entries[fileIndex], (void *)text))
             {
-                text[files->entries[fileIndex].size] = '\0'; 
+                text[files->entries[fileIndex].size] = '\0';
             }
             else
             {
@@ -115,15 +148,15 @@ main(void)
             }
         }
 
-        //Skathi::Bitmap::TGAImage * image = new Skathi::Bitmap::TGAImage("Test.TGA");
-        //delete(image);
+        // Skathi::Bitmap::TGAImage * image = new Skathi::Bitmap::TGAImage("Test.TGA");
+        // delete(image);
 
         // Draw file list
         fileIndex = min(fileIndex, files->entries_count - 1);
 
         for (uint32_t file = 0; file < files->entries_count; file++)
         {
-            if (file == fileIndex) 
+            if (file == fileIndex)
             {
                 dbgio_printf(">%s\n", files->entries[file].name);
             }
@@ -152,8 +185,7 @@ main(void)
 
 /** @brief User stuff initialization
  */
-void
-user_init(void)
+void user_init(void)
 {
     smpc_peripheral_init();
     vdp_sync_vblank_out_set(vblank_out_handler, NULL);
