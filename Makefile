@@ -6,21 +6,18 @@ endif
 
 include $(YAUL_INSTALL_ROOT)/share/build.pre.mk
 
-# Each asset follows the format: <path>;<symbol>. Duplicates are removed
-BUILTIN_ASSETS+=
-
 SH_PROGRAM:= yatg
-SH_SRCS:= \
-	src/yatg.cxx \
+SH_SRCS:= src/yatg.cxx
 
 SH_LIBRARIES:= mic3d tga
-SH_CFLAGS+= -O2 -I. -DDEBUG -g
+SH_CFLAGS+= -O3 -I. -DDEBUG -g
+SH_CXXFLAGS= -O3 -std=c++23 -I. -Wno-error=volatile -Wno-volatile -Wno-register
 
 IP_VERSION:= V1.000
 IP_RELEASE_DATE:= 20160101
 IP_AREAS:= JTUBKAEL
 IP_PERIPHERALS:= JAMKST
-IP_TITLE:= YATG
+IP_TITLE:= DRAM cartridge
 IP_MASTER_STACK_ADDR:= 0x06004000
 IP_SLAVE_STACK_ADDR:= 0x06001E00
 IP_1ST_READ_ADDR:= 0x06004000
