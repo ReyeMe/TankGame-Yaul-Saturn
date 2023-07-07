@@ -25,16 +25,14 @@
                 "${workspaceFolder}/../../libyaul/libyaul/scu/bus/b/vdp",
                 "${workspaceFolder}/../../libyaul/libyaul/scu/bus/cpu",
                 "${workspaceFolder}/../../libyaul/libyaul/scu/bus/cpu/smpc",
-                "${workspaceFolder}/../../sh2eb-elf/sh2eb-elf/include/yaul"
+                "${workspaceFolder}/../../sh2eb-elf/include/yaul"
             ],
-            "compilerPath": "${workspaceFolder}/../../sh2eb-elf/bin/sh2eb-elf-gcc-11.2.0.exe",
+            "compilerPath": "${workspaceFolder}/../../sh2eb-elf/bin/sh2eb-elf-gcc.exe",
             "cStandard": "c17",
             "cppStandard": "c++23",
             "intelliSenseMode": "linux-gcc-x86",
             "defines": [
                 "__STDC_HOSTED__=0"
-            ],
-            "configurationProvider": "ms-vscode.makefile-tools"
         }
     ],
     "version": 4
