@@ -6,8 +6,8 @@ endif
 
 include $(YAUL_INSTALL_ROOT)/share/build.pre.mk
 
-SH_PROGRAM:= yatg
-SH_SRCS:= src/yatg.cxx
+SH_PROGRAM:= utenyaa
+SH_SRCS:= src/utenyaa.cxx
 
 SH_LIBRARIES:= mic3d tga
 SH_CFLAGS+= -O3 -I. -DDEBUG -g

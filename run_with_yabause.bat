@@ -12,7 +12,6 @@ IF ERRORLEVEL 1 (
 
 if not exist *.cue (
     echo "CUE/ISO missing, please build first."
-    pause
 ) else (
     @REM Finding first cue file and running it on yabause
     FOR %%F IN (*.cue) DO (
