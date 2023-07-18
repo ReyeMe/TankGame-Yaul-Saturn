@@ -38,12 +38,11 @@ void main(void)
     dbgio_dev_default_init(DBGIO_DEV_VDP2_ASYNC);
     dbgio_dev_font_load();
 
-    using EntityST = Entity<Utenyaa::Components::InputComponent::Input, Utenyaa::Components::Transform>;
+    Entity::Create(Utenyaa::Components::InputComponent::Input{Source : Utenyaa::Components::InputComponent::P1},
+                   Utenyaa::Components::Transform(1, 2));
 
-    EntityST::Create(Utenyaa::Components::InputComponent::Input { Source : Utenyaa::Components::InputComponent::P1 },
-                     Utenyaa::Components::Transform(1, 2));
+    int iterations = 0;
 
-    int iterations = 10;
     while (true)
     {
         dbgio_puts("[H[2J");
@@ -54,17 +53,19 @@ void main(void)
         Utenyaa::Systems::InputSystem::Process();
         Utenyaa::Systems::PhysicsSystem::Process();
 
-        EntityST::ForEach(
-            [](Utenyaa::Components::InputComponent::Input &p, Utenyaa::Components::Transform &v)
+        Entity::ForEach(
+            [&iterations](Utenyaa::Components::Transform &v)
             {
-                dbgio_printf("Position x:%d y:%d\n", v.X, v.Y);
+                v.X += 2;
+                v.Y += 4;
+                dbgio_printf("Iterations: %d Position x:%d y:%d\n", iterations++, v.X, v.Y);
             });
 
         if (Skathi::Input::Controllers::Gamepad::IsHeld((uint8_t)0, Skathi::Input::Controllers::Gamepad::Button::Right))
         {
             dbgio_printf("i:%d\n", iterations++);
         }
-        
+
         dbgio_flush();
         vdp2_sync();
         vdp2_sync_wait();
@@ -108,7 +109,7 @@ void main(void)
     gst_unset();
 
     // Initialize entity
-    // EntityST::Create(Position(10, 20), Velocity(1, 2));
+    // Entity::Create(Position(10, 20), Velocity(1, 2));
 
     Skathi::Cd::Initialize();
 

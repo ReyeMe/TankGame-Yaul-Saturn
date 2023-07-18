@@ -16,8 +16,7 @@ namespace Utenyaa::Systems
          */
         static void Process()
         {
-            using EntityST = Entity<ComponentTypes...>;
-            EntityST::ForEach(
+            Entity::ForEach(
                 [](ComponentTypes&... args)
                 {
                     SystemType::ProcessEntity(&args...);
