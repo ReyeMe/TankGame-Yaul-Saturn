@@ -14,9 +14,6 @@ extern "C"
 #include <mic3d.h>
 };
 
-uint32_t fileIndex = 0;
-char *text = NULL;
-
 /** @brief Shading table
  */
 vdp1_gouraud_table_t pool_shading_tables[CMDT_COUNT] __aligned(16);
@@ -38,39 +35,7 @@ void main(void)
     dbgio_dev_default_init(DBGIO_DEV_VDP2_ASYNC);
     dbgio_dev_font_load();
 
-    Entity::Create(Utenyaa::Components::InputComponent::Input{Source : Utenyaa::Components::InputComponent::P1},
-                   Utenyaa::Components::Transform(1, 2));
-
-    int iterations = 0;
-
-    while (true)
-    {
-        dbgio_puts("[H[2J");
-
-        // Fetch input
-        Skathi::Input::Peripherals::FetchAll();
-
-        Utenyaa::Systems::InputSystem::Process();
-        Utenyaa::Systems::PhysicsSystem::Process();
-
-        Entity::ForEach(
-            [&iterations](Utenyaa::Components::Transform &v)
-            {
-                v.X += 2;
-                v.Y += 4;
-                dbgio_printf("Iterations: %d Position x:%d y:%d\n", iterations++, v.X, v.Y);
-            });
-
-        if (Skathi::Input::Controllers::Gamepad::IsHeld((uint8_t)0, Skathi::Input::Controllers::Gamepad::Button::Right))
-        {
-            dbgio_printf("i:%d\n", iterations++);
-        }
-
-        dbgio_flush();
-        vdp2_sync();
-        vdp2_sync_wait();
-    }
-
+    /* NOT NEEDED IN THIS EARLY STAGE
     // Initialize 3D
     mic3d_init();
 
@@ -107,82 +72,44 @@ void main(void)
     gst_set((vdp1_vram_t)vdp1_vram_partitions.gouraud_base);
     gst_put(pool_shading_tables2, 512);
     gst_unset();
+    */
 
-    // Initialize entity
-    // Entity::Create(Position(10, 20), Velocity(1, 2));
+    Utenyaa::Components::Transform transform = Utenyaa::Components::Transform();
+    fix16_mat43_identity(&transform.Matrix);
 
-    Skathi::Cd::Initialize();
+    Entity::Create(Utenyaa::Components::InputComponent::Input { Source : Utenyaa::Components::InputComponent::P1 },
+                   transform);
+
+    //Skathi::Cd::Initialize();
 
     while (true)
     {
-
         dbgio_puts("[H[2J");
-
-        // Get list of files
-        cdfs_filelist_t *files = Skathi::Cd::GetAll();
-
+        
         // Fetch input
         Skathi::Input::Peripherals::FetchAll();
 
-        // Select file
-        if (Skathi::Input::Controllers::Gamepad::IsDown((uint8_t)0, Skathi::Input::Controllers::Gamepad::Button::Up))
-        {
-            fileIndex--;
-        }
-        else if (Skathi::Input::Controllers::Gamepad::IsDown((uint8_t)0, Skathi::Input::Controllers::Gamepad::Button::Down))
-        {
-            fileIndex++;
-        }
+        // Process entity components
+        Utenyaa::Systems::InputSystem::Process();
+        Utenyaa::Systems::PhysicsSystem::Process();
 
-        // Read file
-        if (Skathi::Input::Controllers::Gamepad::IsDown((uint8_t)0, Skathi::Input::Controllers::Gamepad::Button::START))
-        {
-            if (text != NULL)
+        // Debug print entities
+        Entity::ForEach(
+            [](Utenyaa::Components::Transform &v)
             {
-                free(text);
-            }
+                fix16_vec3 lastLocation = { v.Matrix.frow[0][3], v.Matrix.frow[1][3], v.Matrix.frow[2][3] };
+                fix16_vec3 forward = { v.Matrix.frow[0][0], v.Matrix.frow[0][1], v.Matrix.frow[0][2] };
 
-            text = (char *)malloc(files->entries[fileIndex].size + 1);
-
-            if (Skathi::Cd::ReadFile(&files->entries[fileIndex], (void *)text))
-            {
-                text[files->entries[fileIndex].size] = '\0';
-            }
-            else
-            {
-                text = NULL;
-            }
-        }
-
-        // Skathi::Bitmap::TGAImage * image = new Skathi::Bitmap::TGAImage("Test.TGA");
-        // delete(image);
-
-        // Draw file list
-        fileIndex = min(fileIndex, files->entries_count - 1);
-
-        for (uint32_t file = 0; file < files->entries_count; file++)
-        {
-            if (file == fileIndex)
-            {
-                dbgio_printf(">%s\n", files->entries[file].name);
-            }
-            else
-            {
-                dbgio_printf(" %s\n", files->entries[file].name);
-            }
-        }
-
-        if (text != NULL)
-        {
-            dbgio_printf("\n%s", text);
-        }
+                dbgio_printf("Position x:%f y:%f z:%f\n", lastLocation.x, lastLocation.y, lastLocation.z);
+                dbgio_printf("Dir x:%f y:%f z:%f\n", forward.x, forward.y, forward.z);
+            });
 
         // Start rendering to screen
-        render();
+        //render();
 
-        vdp1_sync_render();
-        vdp1_sync();
-        vdp1_sync_wait();
+        //vdp1_sync_render();
+        //vdp1_sync();
+        //vdp1_sync_wait();
         dbgio_flush();
         vdp2_sync();
         vdp2_sync_wait();

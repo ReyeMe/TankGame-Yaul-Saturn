@@ -59,13 +59,9 @@ namespace Utenyaa::Components::InputComponent
          */
         AI = 12,
 
-        /** @brief Source is set to Network controller
-         */
-        Network = 13,
-
         /** @brief No control source is present
          */
-        NotPresent,
+        NotPresent = 15,
     };
 
     /** @brief Input component

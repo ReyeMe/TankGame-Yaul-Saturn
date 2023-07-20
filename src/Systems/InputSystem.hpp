@@ -17,8 +17,7 @@ namespace Utenyaa::Systems
          */
         static void ProcessEntity(Utenyaa::Components::InputComponent::Input * input)
         {
-            if (input->Source != Utenyaa::Components::InputComponent::InputSource::Network &&
-                input->Source != Utenyaa::Components::InputComponent::InputSource::AI &&
+            if (input->Source != Utenyaa::Components::InputComponent::InputSource::AI &&
                 input->Source != Utenyaa::Components::InputComponent::InputSource::NotPresent &&
                 Skathi::Input::Controllers::Gamepad::IsConnected((uint8_t)input->Source))
             {
