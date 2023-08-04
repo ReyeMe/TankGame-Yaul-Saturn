@@ -51,7 +51,7 @@ namespace Skathi::Vdp1
             return dataSize;
         }
 
-        /** @brief Loads RGB or paletted image as texture
+        /** @brief Loads paletted image as texture
          * @param image Image to load
          * @param startPaletteColorIndex Index of first color in CRAM to load palette to
          * @param texture Loaded texture
